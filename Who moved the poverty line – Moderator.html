@@ -1,0 +1,382 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Who moved the poverty line? – Moderator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#E8EDF2; --surface:#F7F9FB; --ink:#17253A; --muted:#5B6B7D; --rule:#C8D2DC;
+  --red:#C3322B; --on-red:#FFFFFF; --red-soft:#F6DCD9;
+  --teal:#0D716D; --teal-soft:#D2EBE8;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0F1720; --surface:#17212C; --ink:#E3EAF1; --muted:#93A3B5; --rule:#2B3847;
+    --red:#F0675C; --on-red:#1C0B09; --red-soft:#3A1F1D;
+    --teal:#4CC7BE; --teal-soft:#123230;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0F1720; --surface:#17212C; --ink:#E3EAF1; --muted:#93A3B5; --rule:#2B3847;
+  --red:#F0675C; --on-red:#1C0B09; --red-soft:#3A1F1D;
+  --teal:#4CC7BE; --teal-soft:#123230;
+  color-scheme:dark;
+}
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:16px;line-height:1.5}
+.display{font-family:"Archivo","Arial Narrow",Arial,sans-serif}
+.wrap{max-width:1180px;margin:0 auto;padding:24px 20px 48px}
+.top{display:flex;flex-wrap:wrap;gap:14px 28px;align-items:flex-end;justify-content:space-between;border-bottom:2px solid var(--ink);padding-bottom:14px;margin-bottom:24px}
+h1{font-family:"Archivo","Arial Narrow",Arial,sans-serif;font-weight:800;font-stretch:118%;font-size:clamp(28px,4.2vw,46px);line-height:1.02;letter-spacing:-0.01em;margin:0}
+.lede{margin:6px 0 0;color:var(--muted);max-width:52ch}
+.settings{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px}
+.settings label{font-weight:600}
+.settings input{width:64px;font:600 16px "IBM Plex Sans",sans-serif;padding:7px 8px;border:1.5px solid var(--rule);border-radius:5px;background:var(--surface);color:var(--ink)}
+.needed{color:var(--muted)}
+.setup{background:var(--surface);border:1px solid var(--rule);border-radius:6px;margin-bottom:24px}
+.setup summary{cursor:pointer;padding:14px 20px;font-weight:600;list-style-position:inside}
+.setup-title{font-family:"Archivo","Arial Narrow",Arial,sans-serif;font-weight:800;font-size:20px}
+.setup-sum{color:var(--muted);font-weight:500}
+.setup-body{padding:0 20px 18px}
+.num{width:68px;font:600 16px "IBM Plex Sans",sans-serif;padding:7px 8px;border:1.5px solid var(--rule);border-radius:5px;background:var(--bg);color:var(--ink)}
+.roles{list-style:none;margin:14px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:0 24px}
+.roles li{display:grid;grid-template-columns:36px 1fr auto;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--rule)}
+.roles li.off{opacity:.45}
+.stepper{display:flex;align-items:center;gap:6px}
+.stepper .count{font-size:26px;min-width:34px}
+.stepper .btn{width:38px;min-height:38px;padding:0;font-size:20px}
+.setup-note{margin:14px 0 0;color:var(--muted)}
+.setup-note.warn{color:var(--red);font-weight:600}
+.num:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
+.grid{display:grid;grid-template-columns:minmax(260px,380px) 1fr;gap:28px;align-items:start}
+@media (max-width:820px){.grid{grid-template-columns:1fr}}
+.gauge-panel{position:sticky;top:calc(env(safe-area-inset-top,0px) + 16px)}
+@media (max-width:820px){.gauge-panel{position:static}}
+.progress{margin:0 0 10px;color:var(--muted);font-weight:500}
+.gauge{position:relative;height:min(64vh,540px);min-height:360px;background:var(--surface);border:1px solid var(--rule);border-radius:6px;overflow:hidden}
+.tick{position:absolute;left:0;width:100%;height:0}
+.tick span{position:absolute;left:10px;transform:translateY(-50%);font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.tick::after{content:"";position:absolute;left:52px;right:0;border-top:1px solid var(--rule)}
+.tick.major::after{border-top:1px dashed var(--muted);opacity:.55}
+.pline{position:absolute;left:52px;right:0;height:0;border-top:3px solid var(--red);transition:top .7s cubic-bezier(.2,.8,.2,1);z-index:2}
+.pline .tag{position:absolute;right:10px;bottom:6px;background:var(--red);color:var(--on-red);font-family:"Archivo","Arial Narrow",Arial,sans-serif;font-weight:800;font-size:clamp(18px,2.4vw,24px);padding:4px 12px;border-radius:4px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.dot{position:absolute;width:32px;height:32px;margin:-16px 0 0 -16px;border-radius:50%;display:grid;place-items:center;font-family:"Archivo","Arial Narrow",Arial,sans-serif;font-weight:800;font-size:14px;border:2px solid var(--muted);background:var(--surface);color:var(--muted);z-index:3;transition:top .7s cubic-bezier(.2,.8,.2,1)}
+.dot.win{background:var(--teal);border-color:var(--teal);color:var(--surface)}
+.hidden-note{position:absolute;left:52px;right:0;bottom:12px;text-align:center;font-size:13px;color:var(--muted)}
+@media (prefers-reduced-motion: reduce){.pline,.dot{transition:none}}
+.round{background:var(--surface);border:1px solid var(--rule);border-radius:6px;padding:18px 20px;margin-bottom:14px}
+.round.active{border-color:var(--ink);box-shadow:inset 5px 0 0 var(--ink)}
+.round.locked{opacity:.5}
+.round-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.round-no{font-weight:600;color:var(--muted)}
+.badge{font-size:13px;font-weight:600;padding:2px 10px;border-radius:999px}
+.badge.pass{background:var(--teal-soft);color:var(--teal)}
+.badge.fail{background:var(--red-soft);color:var(--red)}
+.round h2{font-family:"Archivo","Arial Narrow",Arial,sans-serif;font-weight:800;font-stretch:110%;font-size:24px;line-height:1.15;margin:4px 0 6px}
+.q{font-size:18px;font-weight:500;margin:0 0 8px;max-width:60ch}
+.facts{margin:0 0 14px;padding-left:20px;color:var(--muted);max-width:66ch}
+.facts li+li{margin-top:4px}
+.row{display:flex;flex-wrap:wrap;align-items:center;gap:10px 12px}
+.row+.row{margin-top:12px}
+.btn{font:600 15px "IBM Plex Sans",system-ui,sans-serif;padding:9px 15px;border-radius:5px;border:1.5px solid var(--ink);background:transparent;color:var(--ink);cursor:pointer;min-height:42px}
+.btn.primary{background:var(--ink);color:var(--surface)}
+.btn.square{width:44px;padding:0;font-size:22px;line-height:1}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn:focus-visible,.settings input:focus-visible,input[type=checkbox]:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
+.timer{display:flex;align-items:center;gap:10px}
+.time{font-family:"Archivo","Arial Narrow",Arial,sans-serif;font-weight:800;font-size:30px;min-width:84px;font-variant-numeric:tabular-nums}
+.timer.up .time{color:var(--red)}
+.count{font-family:"Archivo","Arial Narrow",Arial,sans-serif;font-weight:800;font-size:36px;min-width:58px;text-align:center;font-variant-numeric:tabular-nums}
+.vlabel{font-weight:600}
+.verdict{font-weight:600}
+.verdict.pass{color:var(--teal)}
+.verdict.fail{color:var(--red)}
+.summary{font-size:17px;font-weight:500;margin:0}
+.reveal{background:var(--surface);border:2px solid var(--ink);border-radius:6px;padding:18px 20px}
+.reveal h2{font-family:"Archivo","Arial Narrow",Arial,sans-serif;font-weight:800;font-stretch:110%;font-size:24px;margin:0 0 6px}
+.reveal p{margin:0 0 12px;color:var(--muted)}
+.results{list-style:none;margin:14px 0 0;padding:0;border-top:1px solid var(--rule)}
+.results li{display:grid;grid-template-columns:36px 1fr auto;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--rule)}
+.chip{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font-family:"Archivo","Arial Narrow",Arial,sans-serif;font-weight:800;border:2px solid var(--muted);color:var(--muted)}
+.chip.win{background:var(--teal);border-color:var(--teal);color:var(--surface)}
+.chip.treasury{border-style:dashed}
+.rname{font-weight:600}
+.rdetail{display:block;font-size:14px;color:var(--muted);font-weight:400}
+.outcome{font-weight:600;text-align:right}
+.outcome.win{color:var(--teal)}
+.outcome.lose{color:var(--muted)}
+.check{display:flex;align-items:center;gap:8px;margin-top:14px;font-size:15px}
+.check input{width:20px;height:20px}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <header class="top">
+    <div>
+      <h1>Who moved the poverty line?</h1>
+      <p class="lede">Record each vote. Every proposal that passes lowers the line by £5 for everyone.</p>
+    </div>
+    <div class="settings">
+      <span class="needed" id="needed"></span>
+      <button class="btn" id="toggleSetup" type="button" data-a="togglesetup">Hide role setup</button>
+      <button class="btn" id="reset" type="button">New game</button>
+    </div>
+  </header>
+
+  <details class="setup" id="setup">
+    <summary><span class="setup-title">Roles for today</span> <span class="setup-sum" id="setupSum"></span></summary>
+    <div class="setup-body">
+      <div class="row">
+        <label class="vlabel" for="present">People in class</label>
+        <input id="present" class="num" type="number" min="2" max="40" value="14">
+        <button class="btn" type="button" data-a="suggest">Suggest roles</button>
+      </div>
+      <ul class="roles" id="roles"></ul>
+      <p class="setup-note" id="setupNote"></p>
+      <div class="row" style="margin-top:14px"><button class="btn primary" type="button" data-a="togglesetup">Hide setup and start the game</button></div>
+    </div>
+  </details>
+
+  <div class="grid">
+    <section class="gauge-panel" aria-label="Poverty line">
+      <p class="progress" id="progress"></p>
+      <div class="gauge" id="gauge"></div>
+    </section>
+    <section>
+      <div id="rounds"></div>
+      <div class="reveal" id="reveal"></div>
+    </section>
+  </div>
+</main>
+
+<script>
+(function(){
+  var ROUNDS = [
+    {key:"dis", title:"Disability costs",
+     q:"Should official statistics subtract the extra costs of disability from income?",
+     facts:["Zaidi and Burchardt (2005): a single working-age adult at medium severity needs about 40% more income, and benefits usually fall short.",
+            "But the estimate depends on which standard-of-living indicator and disability definition you use."]},
+    {key:"lon", title:"London housing costs",
+     q:"Should official statistics subtract London housing costs from income?",
+     facts:["After-housing-costs measures already partly adjust for high rents. Many low-paid essential workers, like carers and cleaners, work in London.",
+            "But is living in London a choice?"]},
+    {key:"child", title:"Childcare costs",
+     q:"Should official statistics subtract childcare costs from income?",
+     facts:["Childcare lets parents work, and without it many couldn’t earn at all.",
+            "But is paying for childcare partly a choice?"]}
+  ];
+  var HH = [
+    {id:"A", name:"Wheelchair user", base:115, adj:{dis:40}, wins:"Disability passes"},
+    {id:"B", name:"Mildly disabled worker in London", base:120, adj:{dis:15, lon:22}, wins:"Disability and London both pass"},
+    {id:"C", name:"Single parent", base:110, adj:{child:30}, wins:"Childcare passes"},
+    {id:"D", name:"Family renting in London", base:112, adj:{lon:25}, wins:"London passes, but not all three"},
+    {id:"E", name:"Low-income worker", base:98, adj:{}, wins:"Nothing passes"},
+    {id:"F", name:"Pensioner on a small income", base:93, adj:{}, wins:"No more than one passes"}
+  ];
+  var TREASURY = {id:"T", name:"Treasury agent", wins:"Disability and London don’t both pass"};
+  var MIN = 70, MAX = 125, KEY = "wmtpl-state-v2";
+
+  function suggest(n){
+    var r = {A:0,B:0,C:0,D:0,E:0,F:0,T:0};
+    if (n <= 0) return r;
+    r.T = n >= 16 ? 3 : n >= 10 ? 2 : n >= 5 ? 1 : 0;
+    var h = n - r.T, order = ["A","C","D","E","F","B"];
+    for (var i = 0; i < h; i++) r[order[i % 6]]++;
+    return r;
+  }
+  function fresh(present){
+    return {present:present, roles:suggest(present), rounds:[{yes:0,status:null},{yes:0,status:null},{yes:0,status:null}], revealed:false, caught:false};
+  }
+  var state = fresh(14);
+  try { var saved = localStorage.getItem(KEY); if (saved) { var p = JSON.parse(saved); if (p && p.rounds && p.rounds.length === 3 && p.roles) state = p; } } catch(e) {}
+  function save(){ try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e) {} }
+
+  var timerLeft = 120, timerId = null;
+
+  function players(){ var t = 0; for (var k in state.roles) t += state.roles[k]; return t; }
+  function needed(){ return Math.floor(players() / 2) + 1; }
+  function inGame(){ return HH.filter(function(h){ return state.roles[h.id] > 0; }); }
+  function passedKeys(){ var out = []; ROUNDS.forEach(function(r,i){ if (state.rounds[i].status === "pass") out.push(r.key); }); return out; }
+  function line(){ return 100 - 5 * passedKeys().length; }
+  function income(h, ps){ var v = h.base; ps.forEach(function(k){ if (h.adj[k]) v -= h.adj[k]; }); return v; }
+  function topPct(v){ return ((MAX - v) / (MAX - MIN)) * 100; }
+  function activeIndex(){ for (var i = 0; i < 3; i++) if (state.rounds[i].status === null) return i; return -1; }
+  function lastDoneIndex(){ var j = -1; for (var i = 0; i < 3; i++) if (state.rounds[i].status !== null) j = i; return j; }
+  function doneCount(){ return state.rounds.filter(function(r){ return r.status !== null; }).length; }
+  function fmtTime(s){ var m = Math.floor(s / 60), r = s % 60; return m + ":" + (r < 10 ? "0" : "") + r; }
+  function people(n){ return n + (n === 1 ? " person" : " people"); }
+
+  function renderSetup(){
+    var list = HH.concat([TREASURY]), html = "";
+    list.forEach(function(r){
+      var c = state.roles[r.id] || 0;
+      html += '<li class="' + (c === 0 ? "off" : "") + '"><span class="chip' + (r.id === "T" ? " treasury" : "") + '">' + r.id + '</span>' +
+        '<span class="rname">' + r.name + '<span class="rdetail">Wins if: ' + r.wins + '</span></span>' +
+        '<span class="stepper"><button class="btn" type="button" data-a="rdec" data-r="' + r.id + '" aria-label="Remove one ' + r.name + '">−</button>' +
+        '<span class="count">' + c + '</span>' +
+        '<button class="btn" type="button" data-a="rinc" data-r="' + r.id + '" aria-label="Add one ' + r.name + '">+</button></span></li>';
+    });
+    document.getElementById("roles").innerHTML = html;
+    var total = players(), note = document.getElementById("setupNote");
+    var msg = "Cards to hand out: " + total + ". " + needed() + " YES votes pass a proposal.";
+    if (total !== state.present) { msg += " This doesn’t match the " + people(state.present) + " in class."; note.className = "setup-note warn"; }
+    else if (state.roles.T === 0) { msg += " There are no Treasury agents in this game."; note.className = "setup-note warn"; }
+    else { note.className = "setup-note"; }
+    note.textContent = msg;
+    document.getElementById("setupSum").textContent = "(" + total + " cards, " + state.roles.T + " Treasury)";
+    var pr = document.getElementById("present"); if (document.activeElement !== pr) pr.value = state.present;
+  }
+
+  function renderGauge(){
+    var g = document.getElementById("gauge"), html = "";
+    for (var v = 120; v >= 75; v -= 5) {
+      var major = (v <= 100 && v >= 85) ? " major" : "";
+      html += '<div class="tick' + major + '" style="top:' + topPct(v) + '%"><span>£' + v + '</span></div>';
+    }
+    var L = line();
+    html += '<div class="pline" style="top:' + topPct(L) + '%"><span class="tag">Poverty line £' + L + '</span></div>';
+    if (state.revealed) {
+      var ps = passedKeys(), hs = inGame(), step = hs.length > 1 ? 64 / (hs.length - 1) : 0;
+      hs.forEach(function(h, i){
+        var inc = income(h, ps), win = inc < L, left = hs.length > 1 ? 26 + i * step : 58;
+        html += '<div class="dot' + (win ? ' win' : '') + '" style="top:' + topPct(inc) + '%;left:' + left + '%" title="' + h.name + ': £' + inc + '">' + h.id + '</div>';
+      });
+    } else {
+      html += '<div class="hidden-note">Households appear here at the reveal</div>';
+    }
+    g.innerHTML = html;
+    var n = passedKeys().length, done = doneCount();
+    document.getElementById("progress").textContent = done === 0 ? "No votes yet. The line starts at £100." :
+      n + " of " + done + " proposal" + (done === 1 ? "" : "s") + " passed so far.";
+  }
+
+  function renderRounds(){
+    var act = activeIndex(), last = lastDoneIndex(), need = needed(), total = players(), html = "";
+    ROUNDS.forEach(function(r, i){
+      var s = state.rounds[i], cls = s.status !== null ? "done" : (i === act ? "active" : "locked");
+      var badge = s.status === "pass" ? '<span class="badge pass">Passed</span>' : s.status === "fail" ? '<span class="badge fail">Failed</span>' : "";
+      html += '<article class="round ' + cls + '"><div class="round-head"><span class="round-no">Round ' + (i + 1) + '</span>' + badge + '</div>';
+      html += '<h2>' + r.title + '</h2><p class="q">' + r.q + '</p>';
+      if (cls === "active") {
+        html += '<ul class="facts">' + r.facts.map(function(f){ return "<li>" + f + "</li>"; }).join("") + '</ul>';
+        html += '<div class="row"><div class="timer' + (timerLeft === 0 ? ' up' : '') + '" id="timer"><span class="time" id="time">' + (timerLeft === 0 ? "Time’s up" : fmtTime(timerLeft)) + '</span>';
+        html += '<button class="btn" type="button" data-a="tstart">' + (timerId ? "Pause" : "Start 2-minute debate") + '</button>';
+        html += '<button class="btn" type="button" data-a="treset">Reset timer</button></div></div>';
+        var pass = s.yes >= need;
+        html += '<div class="row"><span class="vlabel">YES votes</span>';
+        html += '<button class="btn square" type="button" data-a="dec" aria-label="One fewer YES vote">−</button>';
+        html += '<output class="count" aria-live="polite">' + s.yes + '</output>';
+        html += '<button class="btn square" type="button" data-a="inc" aria-label="One more YES vote">+</button>';
+        html += '<span class="verdict ' + (pass ? "pass" : "fail") + '">' + (pass ? "Passes" : "Fails") + ', ' + s.yes + ' to ' + Math.max(0, total - s.yes) + '</span></div>';
+        html += '<div class="row"><button class="btn primary" type="button" data-a="confirm">Record vote</button></div>';
+      } else if (cls === "done") {
+        var word = s.status === "pass" ? "Passed" : "Failed";
+        html += '<div class="row"><p class="summary">' + word + ', ' + s.yes + ' to ' + Math.max(0, total - s.yes) + '.</p>';
+        if (i === last) html += '<button class="btn" type="button" data-a="undo">Undo this vote</button>';
+        html += '</div>';
+      }
+      html += '</article>';
+    });
+    document.getElementById("rounds").innerHTML = html;
+  }
+
+  function renderReveal(){
+    var el = document.getElementById("reveal"), done = doneCount();
+    if (!state.revealed) {
+      el.innerHTML = '<h2>Reveal</h2><p>' + (done === 3 ? "All three votes are in." : "Rounds not yet voted on count as failed.") +
+        (state.roles.T > 0 ? ' Ask the Treasury agents to stand up first, then show the results.' : '') + '</p>' +
+        '<button class="btn primary" type="button" data-a="reveal"' + (done === 0 ? " disabled" : "") + '>Reveal results</button>';
+      return;
+    }
+    var ps = passedKeys(), L = line(), html = '<h2>Results</h2><p>Final poverty line: £' + L + '. Households below it win.</p>';
+    html += '<ul class="results">';
+    inGame().forEach(function(h){
+      var inc = income(h, ps), win = inc < L, c = state.roles[h.id];
+      html += '<li><span class="chip' + (win ? " win" : "") + '">' + h.id + '</span><span class="rname">' + h.name + (c > 1 ? ' (' + c + ' players)' : '') +
+        '<span class="rdetail">£' + inc + (inc !== h.base ? ' (started at £' + h.base + ')' : ' (unchanged)') + '</span></span>' +
+        '<span class="outcome ' + (win ? "win" : "lose") + '">' + (win ? "Wins" : "Loses") + '</span></li>';
+    });
+    if (state.roles.T > 0) {
+      var blocked = !(ps.indexOf("dis") >= 0 && ps.indexOf("lon") >= 0), tWin = blocked && !state.caught;
+      var why = !blocked ? "Disability and London both passed" : (state.caught ? "The agents were caught" : "Disability and London did not both pass");
+      html += '<li><span class="chip treasury' + (tWin ? " win" : "") + '">T</span><span class="rname">Treasury agents<span class="rdetail">' + why + '</span></span>' +
+        '<span class="outcome ' + (tWin ? "win" : "lose") + '">' + (tWin ? "Win" : "Lose") + '</span></li>';
+    }
+    html += '</ul>';
+    if (state.roles.T > 0) html += '<label class="check"><input type="checkbox" data-a="caught"' + (state.caught ? " checked" : "") + '> The Treasury agents were caught (only if you use this rule)</label>';
+    html += '<div class="row" style="margin-top:14px"><button class="btn" type="button" data-a="hide">Hide results</button></div>';
+    el.innerHTML = html;
+  }
+
+  function render(){
+    var total = players();
+    state.rounds.forEach(function(r){ r.yes = Math.min(r.yes, total); });
+    document.getElementById("needed").textContent = total + " players, " + needed() + " YES votes to pass";
+    renderSetup(); renderGauge(); renderRounds(); renderReveal();
+    document.getElementById("setup").hidden = !!state.setupHidden;
+    document.getElementById("toggleSetup").textContent = state.setupHidden ? "Show role setup" : "Hide role setup";
+    save();
+  }
+
+  function stopTimer(){ if (timerId) { clearInterval(timerId); timerId = null; } }
+  function tick(){
+    timerLeft = Math.max(0, timerLeft - 1);
+    var t = document.getElementById("time");
+    if (t) t.textContent = timerLeft === 0 ? "Time’s up" : fmtTime(timerLeft);
+    if (timerLeft === 0) { stopTimer(); renderRounds(); }
+  }
+
+  document.addEventListener("click", function(e){
+    var b = e.target.closest("[data-a]"); if (!b || b.tagName === "INPUT") return;
+    var a = b.getAttribute("data-a"), i = activeIndex(), r = b.getAttribute("data-r");
+    if (a === "inc" && i >= 0) { state.rounds[i].yes = Math.min(players(), state.rounds[i].yes + 1); }
+    else if (a === "dec" && i >= 0) { state.rounds[i].yes = Math.max(0, state.rounds[i].yes - 1); }
+    else if (a === "confirm" && i >= 0) { state.rounds[i].status = state.rounds[i].yes >= needed() ? "pass" : "fail"; stopTimer(); timerLeft = 120; }
+    else if (a === "undo") { var j = lastDoneIndex(); if (j >= 0) { state.rounds[j].status = null; state.revealed = false; stopTimer(); timerLeft = 120; } }
+    else if (a === "tstart") { if (timerId) { stopTimer(); } else { if (timerLeft === 0) timerLeft = 120; timerId = setInterval(tick, 1000); } }
+    else if (a === "treset") { stopTimer(); timerLeft = 120; }
+    else if (a === "reveal") { state.revealed = true; stopTimer(); document.getElementById("setup").open = false; }
+    else if (a === "hide") { state.revealed = false; }
+    else if (a === "togglesetup") { state.setupHidden = !state.setupHidden; if (!state.setupHidden) document.getElementById("setup").open = true; }
+    else if (a === "rinc" && r) { state.roles[r] = Math.min(20, (state.roles[r] || 0) + 1); }
+    else if (a === "rdec" && r) { state.roles[r] = Math.max(0, (state.roles[r] || 0) - 1); }
+    else if (a === "suggest") { var pr = document.getElementById("present"), n = parseInt(pr.value, 10); if (isNaN(n)) n = 14; state.present = Math.max(2, Math.min(40, n)); state.roles = suggest(state.present); }
+    else return;
+    render();
+  });
+
+  document.addEventListener("change", function(e){
+    if (e.target.matches('[data-a="caught"]')) { state.caught = e.target.checked; render(); }
+    if (e.target.id === "present") {
+      var n = parseInt(e.target.value, 10); if (isNaN(n)) n = 14;
+      state.present = Math.max(2, Math.min(40, n));
+      render();
+    }
+  });
+
+  var resetBtn = document.getElementById("reset"), armed = null;
+  resetBtn.addEventListener("click", function(){
+    if (armed) {
+      clearTimeout(armed); armed = null; resetBtn.textContent = "New game";
+      var keepPresent = state.present, keepRoles = state.roles;
+      state = fresh(keepPresent); state.roles = keepRoles;
+      stopTimer(); timerLeft = 120; document.getElementById("setup").open = true; render(); return;
+    }
+    resetBtn.textContent = "Click again to reset";
+    armed = setTimeout(function(){ armed = null; resetBtn.textContent = "New game"; }, 3000);
+  });
+
+  document.getElementById("setup").open = doneCount() === 0;
+  render();
+})();
+</script>
+</body>
+</html>
